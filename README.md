@@ -1,74 +1,20 @@
 <p align="center">
   <img src="https://img.shields.io/badge/MGBX-智能量化-0052FF?style=for-the-badge" alt="MGBX"/>
-  <img src="https://img.shields.io/badge/LobeHub-Skill-8A2BE2?style=for-the-badge" alt="LobeHub"/>
+  <img src="https://img.shields.io/badge/龙虾-Skill-8A2BE2?style=for-the-badge" alt="龙虾"/>
   <img src="https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python" alt="Python"/>
   <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="License"/>
 </p>
 
-<h1 align="center">MGBX 智能量化</h1>
-<h3 align="center">MGBX Intelligent Quant · 金字塔认知交易智能体</h3>
+<h1 align="center">🧠 MGBX 智能量化</h1>
+<h3 align="center">金字塔认知交易智能体</h3>
 
 <p align="center">
-  <i>AI-powered position-rolling engine — distilling elite trader cognition into executable game-theoretic decisions</i>
+  <i>基于 MGBX 合约 API 的 AI 驱动仓位滚动引擎 —— 蒸馏顶级交易员认知，执行多步博弈推演</i>
 </p>
 
 ---
 
-<input type="radio" name="lang" id="lang-cn" checked hidden/>
-<input type="radio" name="lang" id="lang-en" hidden/>
-
-<div class="lang-switch">
-  <label for="lang-cn">🇨🇳 中文</label>
-  <label for="lang-en">🇬🇧 English</label>
-</div>
-
-<style>
-  .lang-switch {
-    display: flex;
-    gap: 0;
-    margin: 24px 0 0;
-    border-bottom: 2px solid #30363d;
-  }
-  .lang-switch label {
-    padding: 8px 20px;
-    cursor: pointer;
-    border: 2px solid #30363d;
-    border-bottom: none;
-    border-radius: 8px 8px 0 0;
-    margin-right: -2px;
-    margin-bottom: -2px;
-    background: #0d1117;
-    color: #8b949e;
-    font-size: 14px;
-    user-select: none;
-    transition: all 0.15s;
-  }
-  .lang-switch label:hover {
-    color: #c9d1d9;
-    background: #161b22;
-  }
-
-  #lang-cn:checked ~ .lang-switch label[for="lang-cn"],
-  #lang-en:checked ~ .lang-switch label[for="lang-en"] {
-    background: #161b22;
-    color: #58a6ff;
-    border-color: #30363d #30363d #161b22;
-    position: relative;
-    z-index: 1;
-    font-weight: 600;
-  }
-
-  .lang-block {
-    display: none;
-    padding: 24px 0 0;
-  }
-  #lang-cn:checked ~ #block-cn { display: block; }
-  #lang-en:checked ~ #block-en { display: block; }
-</style>
-
-<div class="lang-block" id="block-cn">
-
-## 架构哲学
+## 🧬 架构哲学
 
 > *"浮盈加仓的本质不是放大杠杆，而是让利润在非对称风险结构中自我复制。"*
 
@@ -79,9 +25,11 @@
 | **比特皇** | 趋势突破后浮盈加仓，复利降杠杆 | 动态杠杆 + 止损熔断 |
 | **予与** | 裸K识别震荡区间做波段 | 1:1 滚仓 + 龙头聚焦 |
 
+两条认知流线合成了一条完整的 **感知 → 推理 → 执行 → 风控** 智能体管线。
+
 ---
 
-## 交易逻辑流程
+## 🔄 交易逻辑流程
 
 ```mermaid
 flowchart TD
@@ -122,7 +70,7 @@ flowchart TD
 
 ---
 
-## 铁律
+## ⚖️ 铁律
 
 ```
 LAW 1  浮亏时绝对禁止加仓
@@ -133,7 +81,7 @@ LAW 4  止损优先级 >> 止盈
 
 ---
 
-## MGBX 风控合规
+## ⚠️ MGBX 风控合规
 
 策略行为与 [MGBX 异常交易风控规则](https://support.mgbx.com/hc/zh-cn/articles/10048306641167) 对齐：
 
@@ -147,7 +95,14 @@ LAW 4  止损优先级 >> 止盈
 
 ---
 
-## 快速开始
+## ⚡ 快速开始
+
+### 1. 前置条件
+
+- MGBX 合约交易权限（[联系客服开通](https://www.mgbx.com)）
+- MGBX API Key（个人中心 → API 管理）
+
+### 2. 部署
 
 ```bash
 git clone https://github.com/kime2026/rolling-position-mgbx.git
@@ -155,24 +110,41 @@ cd rolling-position-mgbx
 
 mkdir -p ~/.mgbx/skills
 cp mgbx_api.py ~/.mgbx/mgbx_api.py && chmod +x ~/.mgbx/mgbx_api.py
+```
 
-# 配置 ~/.mgbx/config.json 填入 MGBX API 密钥后：
+### 3. 配置密钥
+
+```json
+{
+  "access_key": "your-access-key",
+  "secret_key": "your-secret-key",
+  "base_url": "https://open.mgbx.com"
+}
+```
+
+保存至 `~/.mgbx/config.json`
+
+### 4. 验证
+
+```bash
 python3 ~/.mgbx/mgbx_api.py balance
 ```
 
 ---
 
-## 使用
+## 🎮 使用
+
+在龙虾中激活 `rolling-position` Skill：
 
 ```bash
-/rolling-position btc_usdt
-/rolling-position eth_usdt
-/rolling-position          # 默认 btc_usdt
+/rolling-position btc_usdt      # 分析 BTC
+/rolling-position eth_usdt      # 分析 ETH
+/rolling-position               # 默认 btc_usdt
 ```
 
 ---
 
-## API 映射
+## 📡 API 映射
 
 | 操作 | MGBX REST API |
 |------|---------------|
@@ -188,17 +160,17 @@ python3 ~/.mgbx/mgbx_api.py balance
 
 ---
 
-## 安全模型
+## 🔐 安全模型
 
 ```
- LobeChat (AI)     mgbx_api.py (本地签名)     MGBX API (执行)
+ 龙虾 (AI推理)     mgbx_api.py (本地签名)     MGBX API (执行)
       ✗                       ✓                       ✓
   AI 不接触密钥           HMAC-SHA256             交易所
 ```
 
 ---
 
-## 作者
+## 👤 作者
 
 <p align="center">
   <img src="https://avatars.githubusercontent.com/u/261858468?v=4" width="100" style="border-radius: 50%;" />
@@ -221,172 +193,11 @@ python3 ~/.mgbx/mgbx_api.py balance
   <code>非线性交易架构</code>
 </p>
 
-</div>
-
-<div class="lang-block" id="block-en">
-
-## Philosophy
-
-> *"The essence of pyramiding is not amplifying leverage — it's letting profits self-replicate within an asymmetric risk structure."*
-
-**MGBX Intelligent Quant** is not a simple strategy script. It's a **silicon-based trading cognition system** distilling two elite traders' mental models:
-
-| School | Core Idea | Signature |
-|--------|-----------|-----------|
-| **BitHuang** | Trend breakout pyramiding, compound deleveraging | Dynamic leverage + circuit breaker |
-| **YuYu** | Naked-chart range swing trading | 1:1 rolling + leader-only |
-
 ---
 
-## Trading Flow
+## ⚠️ 免责声明
 
-```mermaid
-flowchart TD
-    A["/rolling-position"] --> B{State Check}
-    B -->|"Daily stops >= 3"| Z[Circuit Breaker]
-    B -->|Normal| C[Fetch Balance]
-    C --> D[Fetch Positions]
-    D --> E["Fetch K-lines 4H + 1H"]
-    E --> F{Pattern Recognition}
-
-    F -->|Trend| G{Has Position?}
-    F -->|Range| H{Has Position?}
-
-    G -->|No| G1["Breakout Entry<br/>Lev 50% · SL 3%"]
-    G -->|"PnL > 10%"| G2["Pyramid Add<br/>Base SL to breakeven"]
-    G -->|Loss| G3["No Add<br/>Observe / Await SL"]
-    G -->|Reversal| G4[Close All]
-
-    H -->|No| H1["Range Edge Limit<br/>Lev 60%"]
-    H -->|PnL| H2["Hold to 80% range"]
-    H -->|Loss| H3["Observe · Await SL"]
-
-    G1 --> V[Verify SL]
-    G2 --> V
-    H1 --> V
-
-    V --> R[Report]
-    R --> U{Confirm?}
-    U -->|yes| X[Execute]
-    U -->|no| Y[Cancel]
-
-    style Z fill:#ff4444,color:#fff
-    style G3 fill:#ffaa00,color:#000
-    style G1 fill:#44aa44,color:#fff
-    style G2 fill:#44aa44,color:#fff
-    style X fill:#0052FF,color:#fff
-```
-
----
-
-## Laws
-
-```
-LAW 1  Never add to a losing position
-LAW 2  3 daily stops -> forced circuit breaker
-LAW 3  Every add-on carries its own stop loss
-LAW 4  Stop loss priority >> Take profit
-```
-
----
-
-## Risk Control Compliance
-
-Aligned with [MGBX Abnormal Trading Rules](https://support.mgbx.com/hc/zh-cn/articles/10048306641167):
-
-| Rule | Threshold | Strategy |
-|------|-----------|----------|
-| Ultra-short | < 40s hold | ✅ Minutes/hours scale |
-| API rate | <= 100/sec | ✅ On-demand |
-| Cancel rate | < 70% | ✅ Market orders |
-| Wash / AB | Prohibited | ✅ Single account |
-| Linked accounts | Prohibited | ✅ Not involved |
-
----
-
-## Quick Start
-
-```bash
-git clone https://github.com/kime2026/rolling-position-mgbx.git
-cd rolling-position-mgbx
-
-mkdir -p ~/.mgbx/skills
-cp mgbx_api.py ~/.mgbx/mgbx_api.py && chmod +x ~/.mgbx/mgbx_api.py
-
-# Configure ~/.mgbx/config.json with MGBX API keys:
-python3 ~/.mgbx/mgbx_api.py balance
-```
-
----
-
-## Usage
-
-```bash
-/rolling-position btc_usdt
-/rolling-position eth_usdt
-/rolling-position          # defaults to btc_usdt
-```
-
----
-
-## API Map
-
-| Action | MGBX REST API |
-|--------|---------------|
-| Balance | `GET /fut/v1/balance/list` |
-| Position | `GET /fut/v1/position/list` |
-| K-line | `GET /fut/v1/public/q/kline` |
-| Order (w/ SL/TP) | `POST /fut/v1/order/create` |
-| Close All | `POST /fut/v1/position/close-all` |
-| Leverage | `POST /fut/v1/position/adjust-leverage` |
-| Cancel | `POST /fut/v1/order/cancel` |
-
-> Docs: https://apidoc.mgbx.com
-
----
-
-## Security
-
-```
- LobeChat (AI)     mgbx_api.py (local sign)     MGBX API (execute)
-      ✗                       ✓                        ✓
-  No key access          HMAC-SHA256              Exchange
-```
-
----
-
-## Author
-
-<p align="center">
-  <img src="https://avatars.githubusercontent.com/u/261858468?v=4" width="100" style="border-radius: 50%;" />
-</p>
-
-<h4 align="center">Kime</h4>
-<h5 align="center">Post-05 Financial Cognitive Architect · AI Trading Agent Builder</h5>
-
-<p align="center">
-He is a digital native, and the definer of financial AI nativity.<br/>
-While traditional quants are still backtesting linear regressions, Kime is writing <strong>trading souls that think</strong> for the next financial era.<br/>
-He focuses on behavioral alignment of financial LLMs — not merely chasing Sharpe ratios, but building cognitive trading agents with <strong>macro perception and antifragile reasoning</strong>.<br/>
-In Kime's architecture, AI is no longer a tool executing commands — it is a <strong>silicon-based partner</strong> capable of multi-step game-theoretic deduction in extremely uncertain markets.
-</p>
-
-<p align="center">
-  <code>AI Agent Trading System Design</code>
-  <code>Financial NLP & Sentiment Factor Mining</code>
-  <code>Investment Decision Agent Alignment</code>
-  <code>Nonlinear Trading Architecture</code>
-</p>
-
-</div>
-
----
-
-## 免责 / Disclaimer
-
-> 本 Skill 是基于规则的认知交易架构，**不构成投资建议**。加密货币合约交易存在极高风险。
->
-> This Skill is a rules-based cognitive architecture. **NOT investment advice**. Crypto futures carry extreme risk.
+> 本 Skill 是基于规则的认知交易架构，**不构成投资建议**。加密货币合约交易存在极高风险，可能导致本金全部损失。请确认止损已正确设置，仓位在你风险承受范围内。
 
 ---
 

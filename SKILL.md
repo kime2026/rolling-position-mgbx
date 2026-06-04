@@ -334,7 +334,7 @@ python3 ~/.mgbx/mgbx_api.py balance   # 验证
 ## 🔐 安全
 
 ```
- AI 推理 (LobeChat)  →  本地签名 (mgbx_api.py)  →  执行 (MGBX)
+ AI 推理 (龙虾)  →  本地签名 (mgbx_api.py)  →  执行 (MGBX)
        ✗                        ✓                        ✓
    密钥不可见              HMAC-SHA256               交易所
 ```
