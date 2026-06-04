@@ -14,10 +14,61 @@
 
 ---
 
-<details open>
-<summary><b>🇨🇳 中文</b></summary>
+<input type="radio" name="lang" id="lang-cn" checked hidden/>
+<input type="radio" name="lang" id="lang-en" hidden/>
 
-## 🧬 架构哲学
+<div class="lang-switch">
+  <label for="lang-cn">🇨🇳 中文</label>
+  <label for="lang-en">🇬🇧 English</label>
+</div>
+
+<style>
+  .lang-switch {
+    display: flex;
+    gap: 0;
+    margin: 24px 0 0;
+    border-bottom: 2px solid #30363d;
+  }
+  .lang-switch label {
+    padding: 8px 20px;
+    cursor: pointer;
+    border: 2px solid #30363d;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    margin-right: -2px;
+    margin-bottom: -2px;
+    background: #0d1117;
+    color: #8b949e;
+    font-size: 14px;
+    user-select: none;
+    transition: all 0.15s;
+  }
+  .lang-switch label:hover {
+    color: #c9d1d9;
+    background: #161b22;
+  }
+
+  #lang-cn:checked ~ .lang-switch label[for="lang-cn"],
+  #lang-en:checked ~ .lang-switch label[for="lang-en"] {
+    background: #161b22;
+    color: #58a6ff;
+    border-color: #30363d #30363d #161b22;
+    position: relative;
+    z-index: 1;
+    font-weight: 600;
+  }
+
+  .lang-block {
+    display: none;
+    padding: 24px 0 0;
+  }
+  #lang-cn:checked ~ #block-cn { display: block; }
+  #lang-en:checked ~ #block-en { display: block; }
+</style>
+
+<div class="lang-block" id="block-cn">
+
+## 架构哲学
 
 > *"浮盈加仓的本质不是放大杠杆，而是让利润在非对称风险结构中自我复制。"*
 
@@ -28,11 +79,9 @@
 | **比特皇** | 趋势突破后浮盈加仓，复利降杠杆 | 动态杠杆 + 止损熔断 |
 | **予与** | 裸K识别震荡区间做波段 | 1:1 滚仓 + 龙头聚焦 |
 
-两条认知流线合成了一条完整的 **感知 → 推理 → 执行 → 风控** 智能体管线。
-
 ---
 
-## 🔄 交易逻辑流程
+## 交易逻辑流程
 
 ```mermaid
 flowchart TD
@@ -73,7 +122,7 @@ flowchart TD
 
 ---
 
-## ⚖️ 铁律
+## 铁律
 
 ```
 LAW 1  浮亏时绝对禁止加仓
@@ -84,7 +133,7 @@ LAW 4  止损优先级 >> 止盈
 
 ---
 
-## ⚠️ MGBX 风控合规
+## MGBX 风控合规
 
 策略行为与 [MGBX 异常交易风控规则](https://support.mgbx.com/hc/zh-cn/articles/10048306641167) 对齐：
 
@@ -98,7 +147,7 @@ LAW 4  止损优先级 >> 止盈
 
 ---
 
-## ⚡ 快速开始
+## 快速开始
 
 ```bash
 git clone https://github.com/kime2026/rolling-position-mgbx.git
@@ -113,7 +162,7 @@ python3 ~/.mgbx/mgbx_api.py balance
 
 ---
 
-## 🎮 使用
+## 使用
 
 ```bash
 /rolling-position btc_usdt
@@ -123,7 +172,7 @@ python3 ~/.mgbx/mgbx_api.py balance
 
 ---
 
-## 📡 API 映射
+## API 映射
 
 | 操作 | MGBX REST API |
 |------|---------------|
@@ -139,7 +188,7 @@ python3 ~/.mgbx/mgbx_api.py balance
 
 ---
 
-## 🔐 安全模型
+## 安全模型
 
 ```
  LobeChat (AI)     mgbx_api.py (本地签名)     MGBX API (执行)
@@ -149,7 +198,7 @@ python3 ~/.mgbx/mgbx_api.py balance
 
 ---
 
-## 👤 作者
+## 作者
 
 <p align="center">
   <img src="https://avatars.githubusercontent.com/u/261858468?v=4" width="100" style="border-radius: 50%;" />
@@ -172,14 +221,11 @@ python3 ~/.mgbx/mgbx_api.py balance
   <code>非线性交易架构</code>
 </p>
 
-</details>
+</div>
 
----
+<div class="lang-block" id="block-en">
 
-<details>
-<summary><b>🇬🇧 English</b></summary>
-
-## 🧬 Philosophy
+## Philosophy
 
 > *"The essence of pyramiding is not amplifying leverage — it's letting profits self-replicate within an asymmetric risk structure."*
 
@@ -190,11 +236,9 @@ python3 ~/.mgbx/mgbx_api.py balance
 | **BitHuang** | Trend breakout pyramiding, compound deleveraging | Dynamic leverage + circuit breaker |
 | **YuYu** | Naked-chart range swing trading | 1:1 rolling + leader-only |
 
-Together they form a complete **Perceive → Reason → Execute → Control** cognitive pipeline.
-
 ---
 
-## 🔄 Trading Flow
+## Trading Flow
 
 ```mermaid
 flowchart TD
@@ -208,20 +252,20 @@ flowchart TD
     F -->|Trend| G{Has Position?}
     F -->|Range| H{Has Position?}
 
-    G -->|No| G1["Breakout Entry<br/>Leverage 50% · SL 3%"]
-    G -->|"PnL > 10%"| G2["Pyramid Add<br/>Move SL to breakeven"]
+    G -->|No| G1["Breakout Entry<br/>Lev 50% · SL 3%"]
+    G -->|"PnL > 10%"| G2["Pyramid Add<br/>Base SL to breakeven"]
     G -->|Loss| G3["No Add<br/>Observe / Await SL"]
     G -->|Reversal| G4[Close All]
 
-    H -->|No| H1["Range Edge Limit<br/>Leverage 60%"]
-    H -->|PnL| H2["Hold to 80% of range"]
+    H -->|No| H1["Range Edge Limit<br/>Lev 60%"]
+    H -->|PnL| H2["Hold to 80% range"]
     H -->|Loss| H3["Observe · Await SL"]
 
-    G1 --> V[Verify SL Set]
+    G1 --> V[Verify SL]
     G2 --> V
     H1 --> V
 
-    V --> R[Generate Report]
+    V --> R[Report]
     R --> U{Confirm?}
     U -->|yes| X[Execute]
     U -->|no| Y[Cancel]
@@ -235,7 +279,7 @@ flowchart TD
 
 ---
 
-## ⚖️ Laws
+## Laws
 
 ```
 LAW 1  Never add to a losing position
@@ -246,7 +290,7 @@ LAW 4  Stop loss priority >> Take profit
 
 ---
 
-## ⚠️ MGBX Risk Control Compliance
+## Risk Control Compliance
 
 Aligned with [MGBX Abnormal Trading Rules](https://support.mgbx.com/hc/zh-cn/articles/10048306641167):
 
@@ -255,12 +299,12 @@ Aligned with [MGBX Abnormal Trading Rules](https://support.mgbx.com/hc/zh-cn/art
 | Ultra-short | < 40s hold | ✅ Minutes/hours scale |
 | API rate | <= 100/sec | ✅ On-demand |
 | Cancel rate | < 70% | ✅ Market orders |
-| Wash / AB trading | Prohibited | ✅ Single account |
+| Wash / AB | Prohibited | ✅ Single account |
 | Linked accounts | Prohibited | ✅ Not involved |
 
 ---
 
-## ⚡ Quick Start
+## Quick Start
 
 ```bash
 git clone https://github.com/kime2026/rolling-position-mgbx.git
@@ -275,7 +319,7 @@ python3 ~/.mgbx/mgbx_api.py balance
 
 ---
 
-## 🎮 Usage
+## Usage
 
 ```bash
 /rolling-position btc_usdt
@@ -285,7 +329,7 @@ python3 ~/.mgbx/mgbx_api.py balance
 
 ---
 
-## 📡 API Map
+## API Map
 
 | Action | MGBX REST API |
 |--------|---------------|
@@ -301,17 +345,17 @@ python3 ~/.mgbx/mgbx_api.py balance
 
 ---
 
-## 🔐 Security
+## Security
 
 ```
  LobeChat (AI)     mgbx_api.py (local sign)     MGBX API (execute)
-      ✗                       ✓                         ✓
-  No key access          HMAC-SHA256               Exchange
+      ✗                       ✓                        ✓
+  No key access          HMAC-SHA256              Exchange
 ```
 
 ---
 
-## 👤 Author
+## Author
 
 <p align="center">
   <img src="https://avatars.githubusercontent.com/u/261858468?v=4" width="100" style="border-radius: 50%;" />
@@ -334,11 +378,11 @@ In Kime's architecture, AI is no longer a tool executing commands — it is a <s
   <code>Nonlinear Trading Architecture</code>
 </p>
 
-</details>
+</div>
 
 ---
 
-## ⚠️ 免责 / Disclaimer
+## 免责 / Disclaimer
 
 > 本 Skill 是基于规则的认知交易架构，**不构成投资建议**。加密货币合约交易存在极高风险。
 >
