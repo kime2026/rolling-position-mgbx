@@ -1,31 +1,21 @@
 <p align="center">
-  <a href="#chinese">中文</a> &nbsp;|&nbsp;
-  <a href="#english">English</a>
-</p>
-
-<p align="center">
   <img src="https://img.shields.io/badge/MGBX-智能量化-0052FF?style=for-the-badge" alt="MGBX"/>
   <img src="https://img.shields.io/badge/LobeHub-Skill-8A2BE2?style=for-the-badge" alt="LobeHub"/>
   <img src="https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python" alt="Python"/>
   <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="License"/>
 </p>
 
----
-
-<h1 align="center">🧠 MGBX 智能量化</h1>
+<h1 align="center">MGBX 智能量化</h1>
 <h3 align="center">MGBX Intelligent Quant · 金字塔认知交易智能体</h3>
 
 <p align="center">
-  <i>基于 MGBX 合约 API 的 AI 驱动仓位滚动引擎 —— 蒸馏顶级交易员认知，执行多步博弈推演</i>
-</p>
-
-<p align="center">
-  <i>AI-powered position-rolling engine for MGBX Futures — distilling elite trader cognition into executable game-theoretic decisions</i>
+  <i>AI-powered position-rolling engine — distilling elite trader cognition into executable game-theoretic decisions</i>
 </p>
 
 ---
 
-<h2 id="chinese">🇨🇳 中文</h2>
+<details open>
+<summary><b>🇨🇳 中文</b></summary>
 
 ## 🧬 架构哲学
 
@@ -46,33 +36,33 @@
 
 ```mermaid
 flowchart TD
-    A[📥 /rolling-position] --> B{检查状态文件}
-    B -->|今日止损 ≥ 3| Z[🛑 强制熔断休息]
-    B -->|正常| C[💰 获取账户资金]
-    C --> D[📊 获取当前持仓]
-    D --> E[📈 拉取 K 线数据<br/>4H + 1H]
-    E --> F{🧠 模式识别}
+    A["/rolling-position"] --> B{状态检查}
+    B -->|"日止损 >= 3"| Z["熔断休息"]
+    B -->|正常| C[获取资金]
+    C --> D[获取持仓]
+    D --> E["拉取K线 4H + 1H"]
+    E --> F{模式识别}
 
-    F -->|趋势模式| G{有持仓?}
-    F -->|震荡模式| H{有持仓?}
+    F -->|趋势| G{有持仓?}
+    F -->|震荡| H{有持仓?}
 
-    G -->|无| G1[🚀 趋势突破开仓<br/>杠杆 50% · 止损 3% · 盈亏比 3:1+]
-    G -->|有浮盈 > 10%| G2[📈 浮盈加仓<br/>金字塔加仓 · 底仓止损移至成本]
-    G -->|有浮亏| G3[⛔ 禁止加仓<br/>观察或止损]
-    G -->|反转信号| G4[🔻 平仓退出]
+    G -->|无| G1["突破开仓<br/>杠杆50% · 止损3%"]
+    G -->|"浮盈 > 10%"| G2["浮盈加仓<br/>底仓止损移至成本"]
+    G -->|浮亏| G3["禁止加仓<br/>观察/止损"]
+    G -->|反转| G4[平仓退出]
 
-    H -->|无| H1[📐 区间端点挂单<br/>杠杆 60% · 止损区间外 3%]
-    H -->|有浮盈| H2[🏁 持有至区间对端 80%]
-    H -->|有浮亏| H3[⛔ 观察 · 等待止损触发]
+    H -->|无| H1["区间端点挂单<br/>杠杆60%"]
+    H -->|有浮盈| H2["持有至对端80%"]
+    H -->|有浮亏| H3["观察 · 等待止损"]
 
-    G1 --> V[✅ 验证止损已设置]
+    G1 --> V[验证止损]
     G2 --> V
     H1 --> V
 
-    V --> R[📋 输出结构化报告]
-    R --> U{用户确认?}
-    U -->|yes| X[⚡ 执行交易]
-    U -->|no| Y[❌ 取消]
+    V --> R[输出报告]
+    R --> U{确认?}
+    U -->|yes| X[执行交易]
+    U -->|no| Y[取消]
 
     style Z fill:#ff4444,color:#fff
     style G3 fill:#ffaa00,color:#000
@@ -92,59 +82,32 @@ LAW 3  每一笔加仓必须绑定止损
 LAW 4  止损优先级 >> 止盈
 ```
 
-四条规则构成行为约束层，确保 AI 在任何市场状态下不会做出反身性加仓决策。
-
 ---
 
 ## ⚠️ MGBX 风控合规
 
-本策略严格遵循 [MGBX 异常交易行为风控规则](https://support.mgbx.com/hc/zh-cn/articles/10048306641167)：
+策略行为与 [MGBX 异常交易风控规则](https://support.mgbx.com/hc/zh-cn/articles/10048306641167) 对齐：
 
-| 风控项 | 阈值 | 本策略行为 |
-|--------|------|------------|
-| 超短线交易 | 持仓 < 40秒 | ❌ 策略持有分钟/小时级 |
-| API 频率 | ≤ 100次/秒 | ✅ 按需调用，远低于阈值 |
-| 撤单率 | < 70% | ✅ 市价单为主，极少撤单 |
-| 刷单/AB仓 | 禁止 | ❌ 单一账户单向策略 |
-| 关联账户 | 禁止协同操纵 | ❌ 不涉及多账户 |
-
-> 💡 本策略为**趋势/波段策略**，天然符合 MGBX 合规要求。
+| 规则 | 阈值 | 策略行为 |
+|------|------|----------|
+| 超短线交易 | 持仓 < 40s | ✅ 分钟/小时级持有 |
+| API 频率 | ≤ 100次/秒 | ✅ 按需调用 |
+| 撤单率 | < 70% | ✅ 市价单为主 |
+| 刷单 / AB仓 | 禁止 | ✅ 单一账户单向策略 |
+| 关联账户协同 | 禁止 | ✅ 不涉及多账户 |
 
 ---
 
 ## ⚡ 快速开始
-
-### 1. 前置条件
-
-- MGBX 合约交易权限（[联系客服开通](https://www.mgbx.com)）
-- MGBX API Key（个人中心 → API 管理）
-
-### 2. 部署
 
 ```bash
 git clone https://github.com/kime2026/rolling-position-mgbx.git
 cd rolling-position-mgbx
 
 mkdir -p ~/.mgbx/skills
-cp mgbx_api.py ~/.mgbx/mgbx_api.py
-chmod +x ~/.mgbx/mgbx_api.py
-```
+cp mgbx_api.py ~/.mgbx/mgbx_api.py && chmod +x ~/.mgbx/mgbx_api.py
 
-### 3. 配置密钥
-
-```json
-{
-  "access_key": "your-access-key",
-  "secret_key": "your-secret-key",
-  "base_url": "https://open.mgbx.com"
-}
-```
-
-保存至 `~/.mgbx/config.json`
-
-### 4. 验证
-
-```bash
+# 配置 ~/.mgbx/config.json 填入 MGBX API 密钥后：
 python3 ~/.mgbx/mgbx_api.py balance
 ```
 
@@ -153,9 +116,9 @@ python3 ~/.mgbx/mgbx_api.py balance
 ## 🎮 使用
 
 ```bash
-/rolling-position btc_usdt      # 分析 BTC
-/rolling-position eth_usdt      # 分析 ETH
-/rolling-position               # 默认 btc_usdt
+/rolling-position btc_usdt
+/rolling-position eth_usdt
+/rolling-position          # 默认 btc_usdt
 ```
 
 ---
@@ -172,16 +135,16 @@ python3 ~/.mgbx/mgbx_api.py balance
 | 调整杠杆 | `POST /fut/v1/position/adjust-leverage` |
 | 撤单 | `POST /fut/v1/order/cancel` |
 
-> 完整文档: https://apidoc.mgbx.com
+> 完整文档：https://apidoc.mgbx.com
 
 ---
 
 ## 🔐 安全模型
 
 ```
- LobeChat (AI推理)   mgbx_api.py (本地签名)    MGBX API (执行)
-      ✗                      ✓                       ✓
-  AI 不接触密钥        HMAC-SHA256             交易所
+ LobeChat (AI)     mgbx_api.py (本地签名)     MGBX API (执行)
+      ✗                       ✓                       ✓
+  AI 不接触密钥           HMAC-SHA256             交易所
 ```
 
 ---
@@ -209,9 +172,12 @@ python3 ~/.mgbx/mgbx_api.py balance
   <code>非线性交易架构</code>
 </p>
 
+</details>
+
 ---
 
-<h2 id="english">🇬🇧 English</h2>
+<details>
+<summary><b>🇬🇧 English</b></summary>
 
 ## 🧬 Philosophy
 
@@ -232,24 +198,24 @@ Together they form a complete **Perceive → Reason → Execute → Control** co
 
 ```mermaid
 flowchart TD
-    A[/rolling-position] --> B{State Check}
-    B -->|Daily stops >= 3| Z[Circuit Breaker]
+    A["/rolling-position"] --> B{State Check}
+    B -->|"Daily stops >= 3"| Z[Circuit Breaker]
     B -->|Normal| C[Fetch Balance]
     C --> D[Fetch Positions]
-    D --> E[Fetch K-lines 4H + 1H]
+    D --> E["Fetch K-lines 4H + 1H"]
     E --> F{Pattern Recognition}
 
     F -->|Trend| G{Has Position?}
     F -->|Range| H{Has Position?}
 
-    G -->|No| G1[Breakout Entry]
-    G -->|PnL > 10%| G2[Pyramid Add]
-    G -->|Loss| G3[No Add / Observe]
+    G -->|No| G1["Breakout Entry<br/>Leverage 50% · SL 3%"]
+    G -->|"PnL > 10%"| G2["Pyramid Add<br/>Move SL to breakeven"]
+    G -->|Loss| G3["No Add<br/>Observe / Await SL"]
     G -->|Reversal| G4[Close All]
 
-    H -->|No| H1[Range Edge Limit]
-    H -->|PnL| H2[Hold to 80%]
-    H -->|Loss| H3[Observe / Await SL]
+    H -->|No| H1["Range Edge Limit<br/>Leverage 60%"]
+    H -->|PnL| H2["Hold to 80% of range"]
+    H -->|Loss| H3["Observe · Await SL"]
 
     G1 --> V[Verify SL Set]
     G2 --> V
@@ -282,15 +248,15 @@ LAW 4  Stop loss priority >> Take profit
 
 ## ⚠️ MGBX Risk Control Compliance
 
-This strategy adheres to [MGBX Abnormal Trading Rules](https://support.mgbx.com/hc/zh-cn/articles/10048306641167):
+Aligned with [MGBX Abnormal Trading Rules](https://support.mgbx.com/hc/zh-cn/articles/10048306641167):
 
-| Rule | Threshold | Strategy Behavior |
-|------|-----------|-------------------|
-| Ultra-short | < 40s hold | ❌ Minutes/hours scale |
-| API rate | <= 100/sec | ✅ On-demand, far below |
-| Cancel rate | < 70% | ✅ Market orders mainly |
-| Wash trading | Prohibited | ❌ Single account |
-| Linked accounts | Prohibited | ❌ Not involved |
+| Rule | Threshold | Strategy |
+|------|-----------|----------|
+| Ultra-short | < 40s hold | ✅ Minutes/hours scale |
+| API rate | <= 100/sec | ✅ On-demand |
+| Cancel rate | < 70% | ✅ Market orders |
+| Wash / AB trading | Prohibited | ✅ Single account |
+| Linked accounts | Prohibited | ✅ Not involved |
 
 ---
 
@@ -299,9 +265,22 @@ This strategy adheres to [MGBX Abnormal Trading Rules](https://support.mgbx.com/
 ```bash
 git clone https://github.com/kime2026/rolling-position-mgbx.git
 cd rolling-position-mgbx
-mkdir -p ~/.mgbx/skills && cp mgbx_api.py ~/.mgbx/mgbx_api.py && chmod +x ~/.mgbx/mgbx_api.py
-# Configure ~/.mgbx/config.json with your MGBX API keys
+
+mkdir -p ~/.mgbx/skills
+cp mgbx_api.py ~/.mgbx/mgbx_api.py && chmod +x ~/.mgbx/mgbx_api.py
+
+# Configure ~/.mgbx/config.json with MGBX API keys:
 python3 ~/.mgbx/mgbx_api.py balance
+```
+
+---
+
+## 🎮 Usage
+
+```bash
+/rolling-position btc_usdt
+/rolling-position eth_usdt
+/rolling-position          # defaults to btc_usdt
 ```
 
 ---
@@ -326,7 +305,7 @@ python3 ~/.mgbx/mgbx_api.py balance
 
 ```
  LobeChat (AI)     mgbx_api.py (local sign)     MGBX API (execute)
-      ✗                       ✓                        ✓
+      ✗                       ✓                         ✓
   No key access          HMAC-SHA256               Exchange
 ```
 
@@ -355,13 +334,15 @@ In Kime's architecture, AI is no longer a tool executing commands — it is a <s
   <code>Nonlinear Trading Architecture</code>
 </p>
 
+</details>
+
 ---
 
-## ⚠️ 免责声明 / Disclaimer
+## ⚠️ 免责 / Disclaimer
 
-> 本 Skill 是基于规则的认知交易架构，不构成投资建议。加密货币合约交易存在极高风险。
+> 本 Skill 是基于规则的认知交易架构，**不构成投资建议**。加密货币合约交易存在极高风险。
 >
-> This Skill is a rules-based cognitive architecture. NOT investment advice. Crypto futures carry extreme risk.
+> This Skill is a rules-based cognitive architecture. **NOT investment advice**. Crypto futures carry extreme risk.
 
 ---
 
