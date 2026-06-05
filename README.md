@@ -6,127 +6,132 @@
 </p>
 
 <h1 align="center">🧠 MGBX 智能量化</h1>
-<h3 align="center">金字塔认知交易智能体</h3>
+<h3 align="center">双周期滚仓引擎 · 4H 定方向 + 15min 抓时机</h3>
 
 <p align="center">
-  <i>基于 MGBX 合约 API 的 AI 驱动仓位滚动引擎 —— 蒸馏顶级交易员认知，执行多步博弈推演</i>
+  <i>跌不动就多，涨不起来就空 —— 永远不逆大势开单</i>
 </p>
 
 ---
 
 ## 🧬 架构哲学
 
-> *"浮盈加仓的本质不是放大杠杆，而是让利润在非对称风险结构中自我复制。"*
+> **4 小时管战略，15 分钟管战术。**
 
-**MGBX 智能量化** 不是简单的策略脚本，而是一套**硅基交易认知体系**。它融合了两位顶级交易员的思维模型：
+传统策略的问题是：用同一个时间轴同时判断方向和时机，导致震荡中反复止损、趋势中追涨杀跌。
 
-| 流派 | 核心思想 | 关键行为 |
-|------|----------|----------|
-| **比特皇** | 趋势突破后浮盈加仓，复利降杠杆 | 动态杠杆 + 止损熔断 |
-| **予与** | 裸K识别震荡区间做波段 | 1:1 滚仓 + 龙头聚焦 |
+**MGBX 智能量化** 把决策拆成两层：
 
-两条认知流线合成了一条完整的 **感知 → 推理 → 执行 → 风控** 智能体管线。
+| 层级 | 周期 | 职责 |
+|------|------|------|
+| **宏观层** | 4H | 判断大方向（UP/DOWN/NEUTRAL），决定只做多还是只做空 |
+| **执行层** | 15min | 等待微观止跌/滞涨信号，寻找最优入场点 |
 
 ---
 
-## 🔄 交易逻辑流程
+## 🔄 交易逻辑
 
 ```mermaid
 flowchart TD
-    A["/rolling-position"] --> B{状态检查}
-    B -->|"日止损 >= 3"| Z["熔断休息"]
-    B -->|正常| C[获取资金]
-    C --> D[获取持仓]
-    D --> E["拉取K线 4H + 1H"]
-    E --> F{模式识别}
+    A["/rolling-position"] --> B{熔断检查}
+    B -->|"日止损≥3"| Z["🛑 强制休息"]
+    B -->|正常| C["4H宏观判定"]
+    C --> D{"方向?"}
 
-    F -->|趋势| G{有持仓?}
-    F -->|震荡| H{有持仓?}
+    D -->|DOWN| E["只做空"]
+    D -->|UP| F["只做多"]
+    D -->|NEUTRAL| G["双向均可"]
 
-    G -->|无| G1["突破开仓<br/>杠杆50% · 止损3%"]
-    G -->|"浮盈 > 10%"| G2["浮盈加仓<br/>底仓止损移至成本"]
-    G -->|浮亏| G3["禁止加仓<br/>观察/止损"]
-    G -->|反转| G4[平仓退出]
+    E --> H["15min 找涨不动"]
+    F --> I["15min 找跌不动"]
+    G --> J["15min 双向找信号"]
 
-    H -->|无| H1["区间端点挂单<br/>杠杆60%"]
-    H -->|有浮盈| H2["持有至对端80%"]
-    H -->|有浮亏| H3["观察 · 等待止损"]
+    H --> K{信号?}
+    I --> K
+    J --> K
 
-    G1 --> V[验证止损]
-    G2 --> V
-    H1 --> V
+    K -->|涨不动| L["🔴 做空 + 止损"]
+    K -->|跌不动| M["🟢 做多 + 止损"]
+    K -->|无信号| N["⏳ 等待"]
 
-    V --> R[输出报告]
-    R --> U{确认?}
-    U -->|yes| X[执行交易]
-    U -->|no| Y[取消]
+    L --> O["持仓管理"]
+    M --> O
+
+    O --> P{浮盈>5%?}
+    P -->|是| Q["移动止损上锁"]
+    P -->|否| R["原止损不变"]
+
+    Q --> S{浮盈>10%?}
+    R --> S
+
+    S -->|是+宏观同向| T["加仓"]
+    S -->|否| U["继续持有"]
+
+    T --> O
+    U --> O
 
     style Z fill:#ff4444,color:#fff
-    style G3 fill:#ffaa00,color:#000
-    style G1 fill:#44aa44,color:#fff
-    style G2 fill:#44aa44,color:#fff
-    style X fill:#0052FF,color:#fff
+    style L fill:#ff6600,color:#fff
+    style M fill:#44aa44,color:#fff
+    style T fill:#0052FF,color:#fff
 ```
+
+---
+
+## 📊 回测验证
+
+> $20 本金 · 2026.5.25–6.05（BTC 暴跌 -17%）· 严格按照策略执行
+
+| 指标 | 结果 |
+|------|------|
+| 最终资金 | **$21.32** |
+| 总盈亏 | **+6.61%** |
+| 交易次数 | 4 |
+| 胜率 | **100%**（4胜0负） |
+| 止损次数 | 0 |
+
+| # | 日期 | 方向 | 入场 | 出场 | 盈亏 | 原因 |
+|---|------|------|------|------|------|------|
+| 1 | 5/25 | 🔴空 | 77,580 | 74,900 | +$0.27 | 止盈 |
+| 2 | 5/27 | 🔴空 | 75,054 | 70,924 | +$0.41 | 移动止损 |
+| 3 | 6/02 | 🔴空 | 67,998 | 63,392 | +$0.46 | 移动止损 |
+| 4 | 6/04 | 🔴空 | 64,370 | 62,570 | +$0.18 | 回测结束 |
+
+> 4H 从 5/25 起识别为 DOWN，15min 只找"涨不动"做空，4 笔全胜零止损。
 
 ---
 
 ## ⚖️ 铁律
 
 ```
-LAW 1  浮亏时绝对禁止加仓
-LAW 2  单日止损 3 次 → 强制熔断
-LAW 3  每一笔加仓必须绑定止损
-LAW 4  止损优先级 >> 止盈
+LAW 1  不逆大势 — 4H下跌只做空，上涨只做多
+LAW 2  三次熔断 — 单日止损3次 → 强制休息
+LAW 3  止损必绑 — 每笔开仓同步设止损
+LAW 4  移动锁利 — 浮盈>5%启动移动止损
 ```
 
 ---
 
 ## ⚠️ MGBX 风控合规
 
-策略行为与 [MGBX 异常交易风控规则](https://support.mgbx.com/hc/zh-cn/articles/10048306641167) 对齐：
+与 [MGBX 风控规则](https://support.mgbx.com/hc/zh-cn/articles/10048306641167) 对齐：
 
-| 规则 | 阈值 | 策略行为 |
-|------|------|----------|
-| 超短线交易 | 持仓 < 40s | ✅ 分钟/小时级持有 |
-| API 频率 | ≤ 100次/秒 | ✅ 按需调用 |
-| 撤单率 | < 70% | ✅ 市价单为主 |
-| 刷单 / AB仓 | 禁止 | ✅ 单一账户单向策略 |
-| 关联账户协同 | 禁止 | ✅ 不涉及多账户 |
+| 规则 | 阈值 | 策略 |
+|------|------|------|
+| 超短线 | < 40s | ✅ 15min 级别 |
+| API 频率 | ≤ 100/s | ✅ 按需 |
+| 撤单率 | < 70% | ✅ 市价为主 |
 
 ---
 
 ## ⚡ 快速开始
 
-### 1. 前置条件
-
-- MGBX 合约交易权限（[联系客服开通](https://www.mgbx.com)）
-- MGBX API Key（个人中心 → API 管理）
-
-### 2. 部署
-
 ```bash
 git clone https://github.com/kime2026/rolling-position-mgbx.git
 cd rolling-position-mgbx
-
 mkdir -p ~/.mgbx/skills
 cp mgbx_api.py ~/.mgbx/mgbx_api.py && chmod +x ~/.mgbx/mgbx_api.py
-```
-
-### 3. 配置密钥
-
-```json
-{
-  "access_key": "your-access-key",
-  "secret_key": "your-secret-key",
-  "base_url": "https://open.mgbx.com"
-}
-```
-
-保存至 `~/.mgbx/config.json`
-
-### 4. 验证
-
-```bash
+# 配置 ~/.mgbx/config.json 填入 MGBX API 密钥
 python3 ~/.mgbx/mgbx_api.py balance
 ```
 
@@ -134,38 +139,9 @@ python3 ~/.mgbx/mgbx_api.py balance
 
 ## 🎮 使用
 
-在龙虾中激活 `rolling-position` Skill：
-
 ```bash
-/rolling-position btc_usdt      # 分析 BTC
-/rolling-position eth_usdt      # 分析 ETH
-/rolling-position               # 默认 btc_usdt
-```
-
----
-
-## 📡 API 映射
-
-| 操作 | MGBX REST API |
-|------|---------------|
-| 资金 | `GET /fut/v1/balance/list` |
-| 持仓 | `GET /fut/v1/position/list` |
-| K线 | `GET /fut/v1/public/q/kline` |
-| 下单 (含止损止盈) | `POST /fut/v1/order/create` |
-| 一键平仓 | `POST /fut/v1/position/close-all` |
-| 调整杠杆 | `POST /fut/v1/position/adjust-leverage` |
-| 撤单 | `POST /fut/v1/order/cancel` |
-
-> 完整文档：https://apidoc.mgbx.com
-
----
-
-## 🔐 安全模型
-
-```
- 龙虾 (AI推理)     mgbx_api.py (本地签名)     MGBX API (执行)
-      ✗                       ✓                       ✓
-  AI 不接触密钥           HMAC-SHA256             交易所
+/rolling-position btc_usdt
+/rolling-position          # 默认 btc_usdt
 ```
 
 ---
@@ -181,9 +157,7 @@ python3 ~/.mgbx/mgbx_api.py balance
 
 <p align="center">
 他是数字原生的一代，也是金融 AI 原生的定义者。<br/>
-当传统量化还在回测线性回归时，Kime 正在为下一个金融时代编写<strong>会思考的交易灵魂</strong>。<br/>
-他专注于金融大模型的行为对齐，不单追求夏普比率，更致力于构建具备<strong>宏观嗅觉、反脆弱推理能力</strong>的认知交易智能体。<br/>
-在 Kime 的架构中，AI 不再是执行指令的工具，而是在极度不确定的市场中，能进行<strong>多步博弈推演</strong>的硅基合伙人。
+当传统量化还在回测线性回归时，Kime 正在为下一个金融时代编写<strong>会思考的交易灵魂</strong>。
 </p>
 
 <p align="center">
@@ -197,7 +171,7 @@ python3 ~/.mgbx/mgbx_api.py balance
 
 ## ⚠️ 免责声明
 
-> 本 Skill 是基于规则的认知交易架构，**不构成投资建议**。加密货币合约交易存在极高风险，可能导致本金全部损失。请确认止损已正确设置，仓位在你风险承受范围内。
+不构成投资建议。加密货币合约交易存在极高风险。
 
 ---
 
