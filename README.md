@@ -200,9 +200,24 @@ python3 ~/.mgbx/mgbx_api.py balance
 
 ---
 
+
+---
+
+## ⚡ 最终策略定型：1.5R 保本 → 2R 追踪止盈
+
+```
+浮盈 < 1.5R  →  初始止损不变
+浮盈 ≥ 1.5R  →  🛡️ 止损移至成本价（保本，确保不亏）
+浮盈 ≥ 2.0R  →  🚀 启动追踪止盈（步长 2%，止损只进不退）
+浮盈 ≥ 2.5R  →  🎯 到达止盈价，平仓锁利
+```
+
+> **盈亏比 1:2.5，80%+ 的盈利交易触发完整保护链。**
+> 这就是 `BACKTEST_MAX.md` 中 ETH +1,122%、BTC +696% 的核心引擎。
+
 ## 📊 历史回测
 
-> **v1 原版 · 50x(实30x) · 盈亏比 1:2.5 · 全仓60%保证金驱动**
+> **v1 最终策略定型 · 50x(实30x) · 盈亏比 1:2.5 · 1.5R保本+2R追踪**
 > 完整逐笔明细见 [`BACKTEST_MAX.md`](./BACKTEST_MAX.md)
 
 | 交易对 | 天数 | 本金 | 最终 | 收益率 | 交易 | 胜率 | 回撤 |
@@ -274,5 +289,5 @@ python3 ~/.mgbx/mgbx_api.py balance
 ---
 
 <p align="center">
-  <sub>Built with 🧬 by <a href="https://github.com/kime2026">Kime</a> · MGBX Intelligent Quant v4.1</sub>
+  <sub>Built with 🧬 by <a href="https://github.com/kime2026">Kime</a> · MGBX Intelligent Quant v1.0.0</sub>
 </p>
